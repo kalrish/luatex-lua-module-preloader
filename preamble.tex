@@ -1,0 +1,12 @@
+% LuaTeX engines do not dump the Lua state in the format. Thus, in dumping sessions, nothing should be done on the Lua side, as it would be lost. While this is somewhat frustrating and one would wish the Lua state would be dumped as well, for consistency if not for anything else, this limitation may still be overcome and custom formats can save some time.
+
+\documentclass{article}
+
+\usepackage{lipsum}
+
+% Additional packages to simulate a normal document.
+\usepackage{xparse}
+\usepackage{etoolbox}
+\usepackage{multicol}
+\usepackage{changepage}
+\usepackage{enumitem}
