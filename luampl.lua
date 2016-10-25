@@ -1,5 +1,6 @@
 local tostring = tostring
 local type = type
+-- Up to Lua 5.1, it was `package.loaders`; from Lua 5.2 onwards, it's `package.searchers`. LuaTeX implements the latter, LuaJITTeX the former.
 local package_searchers = package.searchers or package.loaders
 local lua_setbytecode = _G.lua.setbytecode
 local tex_sprint = _G.tex.sprint
