@@ -85,7 +85,7 @@ return {
 				assert( all_modules_requested_to_be_preloaded_have_been_found,
 					"not all modules requested to be preloaded have been found" )
 			else
-				log_error( "couldn't read the list of modules to preload file (" , list_of_modules_to_preload_file_path , ")" )
+				log_error( "couldn't read from the list of modules to preload file (" , list_of_modules_to_preload_file_path , ")" )
 			end
 		else
 			log_error( "couldn't open the list of modules to preload file (" , list_of_modules_to_preload_file_path , "): " , error_message , " (error ", _G.tostring(error_number) , ")" )
