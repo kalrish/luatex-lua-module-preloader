@@ -88,7 +88,7 @@ return {
 				error("couldn't read from the list of modules to preload file")
 			end
 		else
-			error( "couldn't open the list of modules to preload file: " .. error_message .. " (error " .. _G.tostring(error_number) .. ")" )
+			error( "couldn't open the list of modules to preload file: " .. error_message .. " (error " .. tostring(error_number) .. ")" )
 		end
 	end,
 	setup = function()
