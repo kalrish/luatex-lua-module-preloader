@@ -1,9 +1,9 @@
+!texluac = |> texluac -s -o %o -- %f |> %B.texluabc
+!texluajitc = |> texluajitc -bt raw %f %o |> %B.texluajitbc
 ifeq (@(ENGINE),luatex)
 	TEXLUA_BYTECODE_EXTENSION=texluabc
-	!texluac = |> texluac -s -o %o -- %f |> %B.$(TEXLUA_BYTECODE_EXTENSION)
 else
 	ifeq (@(ENGINE),luajittex)
 		TEXLUA_BYTECODE_EXTENSION=texluajitbc
-		!texluac = |> texluajitc -bt raw %f %o |> %B.$(TEXLUA_BYTECODE_EXTENSION)
 	endif
 endif

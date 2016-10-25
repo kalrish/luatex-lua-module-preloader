@@ -6,7 +6,11 @@
 ##############################################################################
 #
 # all
-# 	Generate the document in the three manners.
+# 	Byte-compile the initialization script and generate the document in the
+# 	three manners.
+# 
+# initscript
+# 	Byte-compile the initialization script.
 # 
 # normal
 # 	Generate the document processing the preamble, without using a custom
@@ -54,8 +58,9 @@ OUTPUT_FORMAT := pdf
 # Tell Make to use Bash to execute recipes, as otherwise we would have very little guarantee on the syntax and features that are available and it's Bash I'm testing this against. Use another shell at your own.
 SHELL := bash
 
-all: normal mitfmt allprl
+all: luaplms.texluabc luaplms.texluajitbc normal mitfmt allprl
 
+initscript: luaplms.texluabc luaplms.texluajitbc
 normal: normal.$(OUTPUT_FORMAT)
 mitfmt: mitfmt.$(OUTPUT_FORMAT)
 allprl: allprl.$(OUTPUT_FORMAT)
@@ -68,12 +73,11 @@ else ifeq ($(ENGINE),luajittex)
 	TEXLUA_BYTECODE_EXTENSION := texluajitbc
 endif
 
-%.$(TEXLUA_BYTECODE_EXTENSION) : %.lua
-ifeq ($(ENGINE),luatex)
+%.texluabc : %.lua
 	texluac -s -o $@ -- $<
-else ifeq ($(ENGINE),luajittex)
+
+%.texluajitbc : %.lua
 	texluajitc -bt raw $< $@
-endif
 
 normal.$(OUTPUT_FORMAT): preamble.tex body.tex
 	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
@@ -91,6 +95,6 @@ allprl.$(OUTPUT_FORMAT): luaplms.$(TEXLUA_BYTECODE_EXTENSION) second.fmt body.te
 	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
 
 clean:
-	rm -f -- normal.log normal.fls normal.aux normal.$(OUTPUT_FORMAT) first.log first.fls first.fmt luaplms.$(TEXLUA_BYTECODE_EXTENSION) mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.$(OUTPUT_FORMAT) second.log second.fls second.fmt allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.$(OUTPUT_FORMAT)
+	rm -f -- luaplms.{texlua,texluajit}bc normal.log normal.fls normal.aux normal.$(OUTPUT_FORMAT) first.log first.fls first.fmt mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.$(OUTPUT_FORMAT) second.log second.fls second.fmt allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.$(OUTPUT_FORMAT)
 
-.PHONY: all normal mitfmt allprl clean
+.PHONY: all initscript normal mitfmt allprl clean
