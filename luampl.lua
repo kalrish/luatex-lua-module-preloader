@@ -38,8 +38,6 @@ local log_error = function( ... )
 end
 
 return function( list_of_modules_to_preload_file_path )
-	list_of_modules_to_preload_file_path = list_of_modules_to_preload_file_path or ( _G.tex.jobname .. "-lua_modules_to_preload.txt" )
-	
 	local preload_lua_module = function( module_name )
 		local i = 1
 		local searcher = package_searchers[1]
