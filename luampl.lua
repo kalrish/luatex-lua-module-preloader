@@ -67,7 +67,7 @@ return {
 				searcher = package_searchers[i]
 			until searcher == nil
 			
-			log_error( "module '" , module_name , "' not found:" , error_details )
+			log_error( "module '" , module_name , "' not found:" , error_details , "\n" )
 		end
 		
 		local fd, error_message, error_number = io.open(list_of_modules_to_preload_file_path, 'rb')
