@@ -8,7 +8,7 @@ local texio_write_nl = _G.texio.write_nl
 require('ltluatex')
 local luatexbase_new_bytecode = _G.luatexbase.new_bytecode
 
-local catcodetableatletter = _G.luatexbase.registernumber('catcodetable@atletter')
+local catcodetable_atletter = _G.luatexbase.registernumber('catcodetable@atletter')
 local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
 
 
@@ -57,7 +57,7 @@ return {
 						local bytecode_register = luatexbase_new_bytecode( "loader for Lua module '" .. module_name .. "'" )
 						lua_setbytecode( bytecode_register , loader_or_error )
 						log_debug( "loader for module '" , module_name , "' stored in bytecode register #" , tostring(bytecode_register) )
-						tex_sprint( catcodetableatletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
+						tex_sprint( catcodetable_atletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
 					else
 						log_error( "along with a loader, searcher returned, for module '" , module_name , "', an extra value, which cannot be handled" )
 					end
@@ -157,6 +157,6 @@ return {
 				end
 			end
 		)
-		tex_sprint( catcodetableatletter , [[\everyjob\expandafter{\the\everyjob\directlua{lua.getbytecode(]] , tostring(bytecode_register) , [[)()}}]] )
+		tex_sprint( catcodetable_atletter , [[\everyjob\expandafter{\the\everyjob\directlua{lua.getbytecode(]] , tostring(bytecode_register) , [[)()}}]] )
 	end
 }
