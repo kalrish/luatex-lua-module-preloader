@@ -1,3 +1,6 @@
+assert( _G.status.ini_version == true,
+	"this module is to be loaded in format dumping sessions, also known as iniTeX runs or --ini mode" )
+
 local tostring = tostring
 local type = type
 -- Up to Lua 5.1, it was `package.loaders`; from Lua 5.2 onwards, it's `package.searchers`. LuaTeX implements the latter, LuaJITTeX the former.
@@ -18,9 +21,6 @@ _G.luatexbase.provides_module{
 	date="2016/10/20"
 }
 
-
-assert( _G.status.ini_version == true,
-	"this module is to be loaded in format dumping sessions, also known as iniTeX runs or --ini mode" )
 
 local logging_prefix = "Lua module preloader: "
 
