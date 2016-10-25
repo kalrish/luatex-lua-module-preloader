@@ -79,7 +79,7 @@ return {
 			local contents = fd:read('*a')
 			fd:close()
 			if contents then
-				for line in contents:gmatch('(.-)\r?\n') do
+				for line in contents:gmatch('(.-)\n') do
 					preload_lua_module(line)
 				end
 				assert( all_modules_requested_to_be_preloaded_have_been_found,
