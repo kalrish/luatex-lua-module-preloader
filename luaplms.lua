@@ -29,6 +29,7 @@ local log_error = function( ... )
 	texio_write(error_logging_target, "error: ", ...)
 end
 
+-- Taken from ltluatex
 local registernumber = function( name )
 	token_create = token_create or token.create
 	token_charzero_mode = token_charzero_mode or token_create('charzero').mode
