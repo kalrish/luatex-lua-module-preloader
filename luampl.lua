@@ -40,8 +40,6 @@ return {
 	preload = function( list_of_modules_to_preload_file_path )
 		list_of_modules_to_preload_file_path = list_of_modules_to_preload_file_path or ( _G.tex.jobname .. "-lua_modules_to_preload.txt" )
 		
-		local all_modules_requested_to_be_preloaded_have_been_found = true
-		
 		local preload_lua_module = function( module_name )
 			local i = 1
 			local searcher = package_searchers[1]
@@ -57,11 +55,10 @@ return {
 						lua_setbytecode( bytecode_register , loader_or_error )
 						log_debug( "loader for module '" , module_name , "' stored in bytecode register #" , tostring(bytecode_register) )
 						tex_sprint( catcodetable_atletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
+						return true
 					else
 						log_error( "along with a loader, searcher returned, for module '" , module_name , "', an extra value, which cannot be handled" )
 					end
-					
-					return
 				elseif type(loader_or_error) == 'string' then
 					error_details = error_details .. loader_or_error
 				end
@@ -70,7 +67,6 @@ return {
 				searcher = package_searchers[i]
 			until searcher == nil
 			
-			all_modules_requested_to_be_preloaded_have_been_found = false
 			log_error( "module '" , module_name , "' not found:" , error_details )
 		end
 		
@@ -79,11 +75,14 @@ return {
 			local contents = fd:read('*a')
 			fd:close()
 			if contents then
+				local all_modules_requested_to_be_preloaded_have_been_preloaded = true
 				for line in contents:gmatch('(.-)\n') do
-					preload_lua_module(line)
+					if not preload_lua_module(line) then
+						all_modules_requested_to_be_preloaded_have_been_preloaded = false
+					end
 				end
-				assert( all_modules_requested_to_be_preloaded_have_been_found,
-					"not all modules requested to be preloaded have been found" )
+				assert( all_modules_requested_to_be_preloaded_have_been_preloaded,
+					"not all modules requested to be preloaded have been preloaded" )
 			else
 				error("couldn't read from the list of modules to preload file")
 			end
