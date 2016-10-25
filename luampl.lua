@@ -52,6 +52,7 @@ return function( list_of_modules_to_preload_file_path )
 					local bytecode_register = luatexbase_new_bytecode( "loader for Lua module '" .. module_name .. "'" )
 					lua_setbytecode( bytecode_register , loader_or_error )
 					log_debug( "loader for module '" , module_name , "' stored in bytecode register #" , tostring(bytecode_register) )
+					-- FIXME: Do this without TeX
 					tex_sprint( catcodetable_atletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
 					return true
 				else
