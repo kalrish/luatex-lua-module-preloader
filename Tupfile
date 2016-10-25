@@ -1,7 +1,10 @@
+include_rules
+
 ENGINE_ARGUMENTS=--interaction=nonstopmode --halt-on-error --recorder @(EXTRA_ENGINE_ARGUMENTS)
 
 : |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=normal --fmt=@(FORMAT) --output-format=@(OUTPUT_FORMAT) -- "\input{preamble.tex}\input{body.tex}" |> normal.log normal.fls normal.aux normal.@(OUTPUT_FORMAT)
-: |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=first -- "&@(FORMAT)" "\input{preamble.tex}\directlua{require('luampl').setup()}\dump" |> first.log first.fls first.fmt
-: first.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=mitfmt --fmt=first --output-format=@(OUTPUT_FORMAT) -- body.tex |> mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.@(OUTPUT_FORMAT)
-: first.fmt mitfmt-lua_modules_to_preload.txt |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=second -- "&first" "\directlua{require('luampl').preload('mitfmt-lua_modules_to_preload.txt')}\dump" |> second.log second.fls second.fmt
-: second.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=allprl --fmt=second --output-format=@(OUTPUT_FORMAT) -- body.tex |> allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.@(OUTPUT_FORMAT)
+: |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=first -- "&@(FORMAT)" "\input{preamble.tex}\dump" |> first.log first.fls first.fmt
+: luamspl.lua |> !texluac |>
+: luamspl.$(TEXLUA_BYTECODE_EXTENSION) first.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=luamspl.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=@(OUTPUT_FORMAT) -- body.tex |> mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.@(OUTPUT_FORMAT)
+: first.fmt mitfmt-lua_modules_to_preload.txt |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=second -- "&first" "\directlua{require('luampl')('mitfmt-lua_modules_to_preload.txt')}\dump" |> second.log second.fls second.fmt
+: luamspl.$(TEXLUA_BYTECODE_EXTENSION) second.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=allprl --lua=luamspl.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=@(OUTPUT_FORMAT) -- body.tex |> allprl.log allprl.fls allprl.aux allprl.@(OUTPUT_FORMAT)

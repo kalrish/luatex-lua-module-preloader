@@ -57,22 +57,35 @@ allprl: allprl.$(OUTPUT_FORMAT)
 
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
+ifeq ($(ENGINE),luatex)
+	TEXLUA_BYTECODE_EXTENSION := texluabc
+else ifeq ($(ENGINE),luajittex)
+	TEXLUA_BYTECODE_EXTENSION := texluajitbc
+endif
+
+%.$(TEXLUA_BYTECODE_EXTENSION) : %.lua
+ifeq ($(ENGINE),luatex)
+	texluac -s -o $@ -- $<
+else ifeq ($(ENGINE),luajittex)
+	texluajitc -bt raw $< $@
+endif
+
 normal.$(OUTPUT_FORMAT): preamble.tex body.tex
 	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
 
 first.fmt: preamble.tex
-	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(FORMAT)' '\input{preamble.tex}\directlua{require("luampl").setup()}\dump'
+	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(FORMAT)' '\input{preamble.tex}\dump'
 
-mitfmt.$(OUTPUT_FORMAT) mitfmt-lua_modules_to_preload.txt: first.fmt body.tex
-	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=mitfmt --fmt=first --output-format=$(OUTPUT_FORMAT) -- body.tex
+mitfmt.$(OUTPUT_FORMAT) mitfmt-lua_modules_to_preload.txt: luamspl.$(TEXLUA_BYTECODE_EXTENSION) first.fmt body.tex
+	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=luamspl.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=$(OUTPUT_FORMAT) -- body.tex
 
 second.fmt: first.fmt mitfmt-lua_modules_to_preload.txt
-	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=second -- '&first' '\directlua{require("luampl").preload("mitfmt-lua_modules_to_preload.txt")}\dump'
+	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=second -- '&first' '\directlua{require("luampl")("mitfmt-lua_modules_to_preload.txt")}\dump'
 
-allprl.$(OUTPUT_FORMAT): second.fmt body.tex
-	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
+allprl.$(OUTPUT_FORMAT): luamspl.$(TEXLUA_BYTECODE_EXTENSION) second.fmt body.tex
+	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=luamspl.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
 
 clean:
-	rm -f -- normal.log normal.fls normal.aux normal.$(OUTPUT_FORMAT) first.log first.fls first.fmt mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.$(OUTPUT_FORMAT) second.log second.fls second.fmt allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.$(OUTPUT_FORMAT)
+	rm -f -- normal.log normal.fls normal.aux normal.$(OUTPUT_FORMAT) first.log first.fls first.fmt luamspl.$(TEXLUA_BYTECODE_EXTENSION) mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.$(OUTPUT_FORMAT) second.log second.fls second.fmt allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.$(OUTPUT_FORMAT)
 
 .PHONY: all normal mitfmt allprl clean
