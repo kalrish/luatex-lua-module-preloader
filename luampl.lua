@@ -1,22 +1,22 @@
-assert( _G.status.ini_version == true,
+assert( status.ini_version == true,
 	"this module is to be loaded in format dumping sessions, also known as iniTeX runs or --ini mode" )
 
 local tostring = tostring
 local type = type
 -- Up to Lua 5.1, it was `package.loaders`; from Lua 5.2 onwards, it's `package.searchers`. LuaTeX implements the latter, LuaJITTeX the former.
 local package_searchers = package.searchers or package.loaders
-local lua_setbytecode = _G.lua.setbytecode
-local tex_sprint = _G.tex.sprint
-local texio_write = _G.texio.write
-local texio_write_nl = _G.texio.write_nl
+local lua_setbytecode = _lua.setbytecode
+local tex_sprint = tex.sprint
+local texio_write = texio.write
+local texio_write_nl = texio.write_nl
 require('ltluatex')
-local luatexbase_new_bytecode = _G.luatexbase.new_bytecode
+local luatexbase_new_bytecode = luatexbase.new_bytecode
 
-local catcodetable_atletter = _G.luatexbase.registernumber('catcodetable@atletter')
+local catcodetable_atletter = luatexbase.registernumber('catcodetable@atletter')
 local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
 
 
-_G.luatexbase.provides_module{
+luatexbase.provides_module{
 	name="luampl",
 	date="2016/10/20",
 	version=2
