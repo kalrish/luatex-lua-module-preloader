@@ -12,12 +12,10 @@ local catcodetable_atletter = _G.luatexbase.registernumber('catcodetable@atlette
 local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
 
 
-_G.luatexbase.provides_module(
-	{
-		name="luampl",
-		date="2016/10/20"
-	}
-)
+_G.luatexbase.provides_module{
+	name="luampl",
+	date="2016/10/20"
+}
 
 
 assert( _G.status.ini_version == true,
