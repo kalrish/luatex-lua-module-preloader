@@ -75,7 +75,10 @@ return function( list_of_modules_to_preload_file_path )
 		if contents then
 			local all_modules_requested_to_be_preloaded_have_been_preloaded = true
 			for module_name in contents:gmatch('(.-)\n') do
-				if not preload_lua_module(module_name) then
+				if preload_lua_module(module_name) then
+					texio_write_nl('term', "Lua module '")
+					texio_write('term', module_name , "' preloaded" )
+				else
 					all_modules_requested_to_be_preloaded_have_been_preloaded = false
 				end
 			end
