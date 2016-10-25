@@ -95,6 +95,7 @@ return {
 		local bytecode_register = luatexbase_new_bytecode()
 		lua_setbytecode( bytecode_register,
 			function()
+				-- The code below failed in format dumping sessions. I don't yet know why, but since there doesn't seem to be much use in using preloaded modules in iniTeX runs, disabling it then seems ok.
 				if not _G.status.ini_version then
 					local tostring = _G.tostring
 					local lua_getbytecode = _G.lua.getbytecode
