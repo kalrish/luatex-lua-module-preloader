@@ -95,6 +95,6 @@ allprl.$(OUTPUT_FORMAT): luaplms.$(TEXLUA_BYTECODE_EXTENSION) second.fmt body.te
 	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
 
 clean:
-	rm -f -- luaplms.{texlua,texluajit}bc normal.log normal.fls normal.aux normal.$(OUTPUT_FORMAT) first.log first.fls first.fmt mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.$(OUTPUT_FORMAT) second.log second.fls second.fmt allprl.log allprl.fls allprl-lua_modules_to_preload.txt allprl.aux allprl.$(OUTPUT_FORMAT)
+	rm -f -- luaplms.{texlua,texluajit}bc normal.{log,fls,aux,$(OUTPUT_FORMAT)} first.{log,fls,fmt} mitfmt.{log,fls} mitfmt-lua_modules_to_preload.txt mitfmt.{aux,$(OUTPUT_FORMAT)} second.{log,fls,fmt} allprl.{log,fls,aux,$(OUTPUT_FORMAT)}
 
 .PHONY: all initscript normal mitfmt allprl clean
