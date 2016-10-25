@@ -74,8 +74,8 @@ return function( list_of_modules_to_preload_file_path )
 		fd:close()
 		if contents then
 			local all_modules_requested_to_be_preloaded_have_been_preloaded = true
-			for line in contents:gmatch('(.-)\n') do
-				if not preload_lua_module(line) then
+			for module_name in contents:gmatch('(.-)\n') do
+				if not preload_lua_module(module_name) then
 					all_modules_requested_to_be_preloaded_have_been_preloaded = false
 				end
 			end
