@@ -39,7 +39,7 @@ FORMAT := lualatex
 # Additional arguments to pass to the engine both in dumping formats and in
 # producing documents
 #  e.g.: --jiton, --jithash=luajit20
-EXTRA_ENGINE_ARGUMENTS :=
+EXTRA_ENGINE_ARGUMENTS := 
 # Format of the final document
 #  e.g.: dvi, pdf
 OUTPUT_FORMAT := pdf
