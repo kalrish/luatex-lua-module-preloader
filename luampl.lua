@@ -96,6 +96,8 @@ return {
 			function()
 				-- The code below failed in format dumping sessions. I don't yet know why, but since there doesn't seem to be much use in using preloaded modules in iniTeX runs, disabling it then seems ok.
 				if not _G.status.ini_version then
+					-- When storing a function in a Lua bytecode register, only the function is stored, that is, none of its upvalues is saved. This means locals declared outside the stored function are lost. That's why the explicit global references and the duplicates.
+					
 					local tostring = _G.tostring
 					local lua_getbytecode = _G.lua.getbytecode
 					local texio_write = _G.texio.write
