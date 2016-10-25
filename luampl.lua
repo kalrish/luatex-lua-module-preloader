@@ -158,6 +158,7 @@ return {
 				end
 			end
 		)
+		-- FIXME: Append to \everyjob from Lua, without TeX
 		tex_sprint( catcodetable_atletter , [[\everyjob\expandafter{\the\everyjob\directlua{lua.getbytecode(]] , tostring(bytecode_register) , [[)()}}]] )
 	end
 }
