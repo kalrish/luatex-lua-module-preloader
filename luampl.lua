@@ -11,6 +11,7 @@ local texio_write = texio.write
 local texio_write_nl = texio.write_nl
 require('ltluatex')
 local luatexbase_new_bytecode = luatexbase.new_bytecode
+local luatexbase_registernumber = luatexbase.registernumber
 
 local catcodetable_atletter = luatexbase.registernumber('catcodetable@atletter')
 local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
@@ -38,35 +39,44 @@ local log_error = function( ... )
 end
 
 return function( list_of_modules_to_preload_file_path )
+	local module_already_preloaded = function( module_name )
+		return luatexbase_registernumber( lua_bytecode_register_name_prefix .. module_name ) ~= false
+	end
+	
 	local preload_lua_module = function( module_name )
-		local i = 1
-		local searcher = package_searchers[1]
-		local error_details = ""
-		
-		repeat
-			local loader_or_error, extra_value = searcher(module_name)
-			if type(loader_or_error) == 'function' then
-				log_debug( "loader for module '" , module_name , "' found by module searcher #" , tostring(i) )
-				
-				if not extra_value then
-					local bytecode_register = luatexbase_new_bytecode( "loader for Lua module '" .. module_name .. "'" )
-					lua_setbytecode( bytecode_register , loader_or_error )
-					log_debug( "loader for module '" , module_name , "' stored in bytecode register #" , tostring(bytecode_register) )
-					-- FIXME: Do this without TeX
-					tex_sprint( catcodetable_atletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
-					return true
-				else
-					log_error( "along with a loader, searcher returned, for module '" , module_name , "', an extra value, which cannot be handled" )
-				end
-			elseif type(loader_or_error) == 'string' then
-				error_details = error_details .. loader_or_error
-			end
+		if not module_already_preloaded(module_name) then
+			local i = 1
+			local searcher = package_searchers[1]
+			local error_details = ""
 			
-			i = i + 1
-			searcher = package_searchers[i]
-		until searcher == nil
-		
-		log_error( "module '" , module_name , "' not found:" , error_details , "\n" )
+			repeat
+				local loader_or_error, extra_value = searcher(module_name)
+				if type(loader_or_error) == 'function' then
+					log_debug( "loader for module '" , module_name , "' found by module searcher #" , tostring(i) )
+					
+					if not extra_value then
+						local bytecode_register = luatexbase_new_bytecode( "loader for Lua module '" .. module_name .. "'" )
+						lua_setbytecode( bytecode_register , loader_or_error )
+						log_debug( "loader for module '" , module_name , "' stored in bytecode register #" , tostring(bytecode_register) )
+						-- FIXME: Do this without TeX
+						tex_sprint( catcodetable_atletter , [[\expandafter\chardef\csname]] , lua_bytecode_register_name_prefix , module_name , [[\endcsname=]] , tostring(bytecode_register) , [[\relax]] )
+						return true
+					else
+						log_error( "along with a loader, searcher returned, for module '" , module_name , "', an extra value, which cannot be handled" )
+					end
+				elseif type(loader_or_error) == 'string' then
+					error_details = error_details .. loader_or_error
+				end
+				
+				i = i + 1
+				searcher = package_searchers[i]
+			until searcher == nil
+			
+			log_error( "module '" , module_name , "' not found:" , error_details , "\n" )
+		else
+			log_debug( "module '" , module_name , "' had already been preloaded" )
+			return true
+		end
 	end
 	
 	local fd, error_message, error_number = io.open(list_of_modules_to_preload_file_path, 'rb')
