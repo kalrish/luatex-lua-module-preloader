@@ -7,7 +7,7 @@ TeX engines have traditionally allowed to dump their state in a format and resto
 ##  Overview
 `luampl` is a Lua module for LuaTeX engines to be loaded in format dumping sessions, also known as iniTeX runs or --ini mode, which allows to preload Lua modules in the format so that they don't have to be read and possibly translated to bytecode every time the document is generated.
 
-`luamspl` is a LuaTeX Lua initialization script that hooks into the Lua module loading mechanism so as to load preloaded modules.
+`luaplms` is a LuaTeX Lua initialization script that hooks into the Lua module loading mechanism so as to load preloaded modules.
 
 ##  Advantages
  -  slightly faster document generation
@@ -57,7 +57,7 @@ To generate the document using the format:
 
 Now that you're using a format, it's time to preload the Lua modules required to generate the document. However, first you need to know which modules to preload. To get the list of modules used in generating your document, use the initialization script:
 
-    $  luatex --lua=luamspl.lua --lua-module-record=lua_modules_to_preload.txt --fmt=myfmt main.tex
+    $  luatex --lua=luaplms.lua --lua-module-record=lua_modules_to_preload.txt --fmt=myfmt main.tex
 
 A file named `lua_modules_to_preload.txt` will be created. This file contains the list of modules you could preload in the format. To do that:
 
