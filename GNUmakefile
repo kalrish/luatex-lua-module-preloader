@@ -37,8 +37,8 @@ clean:
 .PHONY: all module initscript tests test-basic test-already_preloaded clean
 
 
-ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
+ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
 tests/basic/normal.$(OUTPUT_FORMAT): tests/basic/preamble.tex tests/basic/body.tex
 	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
