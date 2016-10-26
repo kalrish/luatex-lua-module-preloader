@@ -6,7 +6,6 @@ ENGINES := luatex luajittex
 LUA_STRIP := y
 
 # Which engine to use for the tests
-#  examples: luatex, luajittex
 ENGINE := luatex
 
 # Base format to build upon in tests
