@@ -8,14 +8,19 @@ SHELL := bash
 include config.mk
 
 
+KNOWN_ENGINES := luatex luajittex
+TEXLUA_BYTECODE_EXTENSION_luatex := texluabc
+TEXLUA_BYTECODE_EXTENSION_luajittex := texluajitbc
+
+
 # Byte-compile the module and the initialization script for all engines and perform all tests
 all: module initscript tests
 
 # Byte-compile the module for all engines
-module: luampl.texluabc luampl.texluajitbc
+module: $(foreach engine,$(KNOWN_ENGINES),luampl.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
 # Byte-compile the initialization script for all engines
-initscript: luaplms.texluabc luaplms.texluajitbc
+initscript: $(foreach engine,$(KNOWN_ENGINES),luaplms.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
 # Perform all tests
 tests: test-basic test-already_preloaded
@@ -25,15 +30,12 @@ test-basic: tests/basic/normal.$(OUTPUT_FORMAT) tests/basic/mitfmt.$(OUTPUT_FORM
 test-already_preloaded: tests/already_preloaded/fmt2.fmt
 
 clean:
-	rm -f -- {luampl,luaplms}.{texlua,texluajit}bc tests/basic/normal.{log,fls,aux,$(OUTPUT_FORMAT)} tests/basic/first.{log,fls,fmt} tests/basic/mitfmt.{log,fls} tests/basic/mitfmt-lua_modules_to_preload.txt tests/basic/mitfmt.{aux,$(OUTPUT_FORMAT)} tests/basic/second.{log,fls,fmt} tests/basic/allprl.{log,fls,aux,$(OUTPUT_FORMAT)} tests/already_preloaded/fmt{1,2}.{log,fls,fmt}
+	rm -f -- $(foreach engine,$(KNOWN_ENGINES),{luampl,luaplms}.$(TEXLUA_BYTECODE_EXTENSION_$(engine))) tests/basic/normal.{log,fls,aux,$(OUTPUT_FORMAT)} tests/basic/first.{log,fls,fmt} tests/basic/mitfmt.{log,fls} tests/basic/mitfmt-lua_modules_to_preload.txt tests/basic/mitfmt.{aux,$(OUTPUT_FORMAT)} tests/basic/second.{log,fls,fmt} tests/basic/allprl.{log,fls,aux,$(OUTPUT_FORMAT)} tests/already_preloaded/fmt{1,2}.{log,fls,fmt}
 
 .PHONY: all module initscript tests test-basic test-already_preloaded clean
 
 
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
-
-TEXLUA_BYTECODE_EXTENSION_luatex := texluabc
-TEXLUA_BYTECODE_EXTENSION_luajittex := texluajitbc
 
 TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
 
