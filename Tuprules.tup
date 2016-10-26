@@ -1,3 +1,5 @@
+.gitignore
+
 !texluac = |> texluac -s -o %o -- %f |> %B.texluabc
 !texluajitc = |> texluajitc -bt raw %f %o |> %B.texluajitbc
 
