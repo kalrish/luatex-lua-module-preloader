@@ -6,24 +6,24 @@
 ##############################################################################
 #
 # all
-# 	Byte-compile the initialization script and generate the document in the
-# 	three manners.
+# 	Byte-compile the module and the initialization script and perform all
+# 	tests.
+# 
+# module
+# 	Byte-compile the module.
 # 
 # initscript
 # 	Byte-compile the initialization script.
 # 
-# normal
-# 	Generate the document processing the preamble, without using a custom
-# 	format.
+# tests
+# 	Perform all tests.
 # 
-# mitfmt
-# 	Dump a format having processed the preamble and set up the Lua module
-# 	preloading system, and then generate the document using that format.
+# test-basic
+# 	Perform the basic test, which serves both as an usage and an automation
+# 	example.
 # 
-# allprl
-# 	Preload the modules specified by the list that's produced in performing
-# 	`mitfmt` thanks to the setup, dump a format based on that which was
-# 	already dumped and generate the document using it.
+# test-already_preloaded
+# 	Perform the test about handling already preloaded modules.
 # 
 # clean
 # 	Remove generated files.
@@ -58,12 +58,17 @@ OUTPUT_FORMAT := pdf
 # Tell Make to use Bash to execute recipes, as otherwise we would have very little guarantee on the syntax and features that are available and it's Bash I'm testing this against. Use another shell at your own.
 SHELL := bash
 
-all: initscript normal mitfmt allprl
+all: module initscript tests
+
+module: luampl.texluabc luampl.texluajitbc
 
 initscript: luaplms.texluabc luaplms.texluajitbc
-normal: normal.$(OUTPUT_FORMAT)
-mitfmt: mitfmt.$(OUTPUT_FORMAT)
-allprl: allprl.$(OUTPUT_FORMAT)
+
+tests: test-basic test-already_preloaded
+
+test-basic: tests/basic/normal.$(OUTPUT_FORMAT) tests/basic/mitfmt.$(OUTPUT_FORMAT) tests/basic/allprl.$(OUTPUT_FORMAT)
+
+test-already_preloaded: tests/already_preloaded/fmt2.fmt
 
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
@@ -79,22 +84,28 @@ endif
 %.texluajitbc : %.lua
 	texluajitc -bt raw $< $@
 
-normal.$(OUTPUT_FORMAT): preamble.tex body.tex
-	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
+tests/basic/normal.$(OUTPUT_FORMAT): tests/basic/preamble.tex tests/basic/body.tex
+	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
 
-first.fmt: preamble.tex
-	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(FORMAT)' '\input{preamble.tex}\dump'
+tests/basic/first.fmt: tests/basic/preamble.tex
+	cd tests/basic ; time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(FORMAT)' '\input{preamble.tex}\dump'
 
-mitfmt.$(OUTPUT_FORMAT) mitfmt-lua_modules_to_preload.txt: luaplms.$(TEXLUA_BYTECODE_EXTENSION) first.fmt body.tex
-	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=luaplms.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=$(OUTPUT_FORMAT) -- body.tex
+tests/basic/mitfmt.$(OUTPUT_FORMAT) tests/basic/mitfmt-lua_modules_to_preload.txt: luaplms.$(TEXLUA_BYTECODE_EXTENSION) tests/basic/first.fmt tests/basic/body.tex
+	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=$(OUTPUT_FORMAT) -- body.tex
 
-second.fmt: first.fmt mitfmt-lua_modules_to_preload.txt
-	time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=second -- '&first' '\directlua{require("luampl")("mitfmt-lua_modules_to_preload.txt")}\dump'
+tests/basic/second.fmt: tests/basic/first.fmt luampl.$(TEXLUA_BYTECODE_EXTENSION) tests/basic/mitfmt-lua_modules_to_preload.txt
+	cd tests/basic ; time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=second -- '&first' '\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("mitfmt-lua_modules_to_preload.txt")}\dump'
 
-allprl.$(OUTPUT_FORMAT): luaplms.$(TEXLUA_BYTECODE_EXTENSION) second.fmt body.tex
-	time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
+tests/basic/allprl.$(OUTPUT_FORMAT): luaplms.$(TEXLUA_BYTECODE_EXTENSION) tests/basic/second.fmt tests/basic/body.tex
+	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
+
+tests/already_preloaded/fmt1.fmt: luampl.$(TEXLUA_BYTECODE_EXTENSION)
+	cd tests/already_preloaded ; '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=fmt1 -- '&$(FORMAT)' '\input{preamble.tex}\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("lua_modules_to_preload_in_format.txt")}\dump'
+
+tests/already_preloaded/fmt2.fmt: tests/already_preloaded/fmt1.fmt luampl.$(TEXLUA_BYTECODE_EXTENSION)
+	cd tests/already_preloaded ; '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=fmt2 -- '&fmt1' '\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("lua_modules_to_preload_in_format.txt")}\dump'
 
 clean:
-	rm -f -- luaplms.{texlua,texluajit}bc normal.{log,fls,aux,$(OUTPUT_FORMAT)} first.{log,fls,fmt} mitfmt.{log,fls} mitfmt-lua_modules_to_preload.txt mitfmt.{aux,$(OUTPUT_FORMAT)} second.{log,fls,fmt} allprl.{log,fls,aux,$(OUTPUT_FORMAT)}
+	rm -f -- {luampl,luaplms}.{texlua,texluajit}bc tests/basic/normal.{log,fls,aux,$(OUTPUT_FORMAT)} tests/basic/first.{log,fls,fmt} tests/basic/mitfmt.{log,fls} tests/basic/mitfmt-lua_modules_to_preload.txt tests/basic/mitfmt.{aux,$(OUTPUT_FORMAT)} tests/basic/second.{log,fls,fmt} tests/basic/allprl.{log,fls,aux,$(OUTPUT_FORMAT)} tests/already_preloaded/fmt{1,2}.{log,fls,fmt}
 
-.PHONY: all initscript normal mitfmt allprl clean
+.PHONY: all module initscript tests test-basic test-already_preloaded clean
