@@ -51,11 +51,10 @@ test-already_preloaded: tests/already_preloaded/fmt2.fmt
 
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
-ifeq ($(ENGINE),luatex)
-	TEXLUA_BYTECODE_EXTENSION := texluabc
-else ifeq ($(ENGINE),luajittex)
-	TEXLUA_BYTECODE_EXTENSION := texluajitbc
-endif
+TEXLUA_BYTECODE_EXTENSION_luatex := texluabc
+TEXLUA_BYTECODE_EXTENSION_luajittex := texluajitbc
+
+TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
 
 %.texluabc : %.lua
 ifeq ($(LUA_STRIP),y)
