@@ -1,3 +1,6 @@
+# Which engines to work with
+ENGINES := luatex
+
 # Whether to strip in byte-compiling Lua chunks
 #  either 'y' or 'n'
 LUA_STRIP := y

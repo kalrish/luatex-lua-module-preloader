@@ -8,21 +8,18 @@ SHELL := bash
 include config.mk
 
 
-KNOWN_ENGINES := luatex luajittex
-
-
-# Include rules and variables specific to each engine
-include $(foreach engine,$(KNOWN_ENGINES),engines.mk/$(engine).mk)
+# Include rules and variables specific to each of the engines selected
+include $(foreach engine,$(ENGINES),engines.mk/$(engine).mk)
 
 
 # Byte-compile the module and the initialization script for all engines and perform all tests
 all: module initscript tests
 
-# Byte-compile the module for all known engines
-module: $(foreach engine,$(KNOWN_ENGINES),luampl.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
+# Byte-compile the module for all selected engines
+module: $(foreach engine,$(ENGINES),luampl.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
-# Byte-compile the initialization script for all known engines
-initscript: $(foreach engine,$(KNOWN_ENGINES),luaplms.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
+# Byte-compile the initialization script for all selected engines
+initscript: $(foreach engine,$(ENGINES),luaplms.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
 # Perform all tests
 tests: test-basic test-already_preloaded
@@ -32,7 +29,7 @@ test-basic: tests/basic/normal.$(OUTPUT_FORMAT) tests/basic/mitfmt.$(OUTPUT_FORM
 test-already_preloaded: tests/already_preloaded/fmt2.fmt
 
 clean:
-	rm -f -- $(foreach engine,$(KNOWN_ENGINES),{luampl,luaplms}.$(TEXLUA_BYTECODE_EXTENSION_$(engine))) tests/basic/normal.{log,fls,aux,$(OUTPUT_FORMAT)} tests/basic/first.{log,fls,fmt} tests/basic/mitfmt.{log,fls} tests/basic/mitfmt-lua_modules_to_preload.txt tests/basic/mitfmt.{aux,$(OUTPUT_FORMAT)} tests/basic/second.{log,fls,fmt} tests/basic/allprl.{log,fls,aux,$(OUTPUT_FORMAT)} tests/already_preloaded/fmt{1,2}.{log,fls,fmt}
+	rm -f -- $(foreach engine,$(ENGINES),{luampl,luaplms}.$(TEXLUA_BYTECODE_EXTENSION_$(engine))) tests/basic/normal.{log,fls,aux,$(OUTPUT_FORMAT)} tests/basic/first.{log,fls,fmt} tests/basic/mitfmt.{log,fls} tests/basic/mitfmt-lua_modules_to_preload.txt tests/basic/mitfmt.{aux,$(OUTPUT_FORMAT)} tests/basic/second.{log,fls,fmt} tests/basic/allprl.{log,fls,aux,$(OUTPUT_FORMAT)} tests/already_preloaded/fmt{1,2}.{log,fls,fmt}
 
 .PHONY: all module initscript tests test-basic test-already_preloaded clean
 
