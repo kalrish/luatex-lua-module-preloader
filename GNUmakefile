@@ -58,7 +58,7 @@ OUTPUT_FORMAT := pdf
 # Tell Make to use Bash to execute recipes, as otherwise we would have very little guarantee on the syntax and features that are available and it's Bash I'm testing this against. Use another shell at your own.
 SHELL := bash
 
-all: luaplms.texluabc luaplms.texluajitbc normal mitfmt allprl
+all: initscript normal mitfmt allprl
 
 initscript: luaplms.texluabc luaplms.texluajitbc
 normal: normal.$(OUTPUT_FORMAT)
