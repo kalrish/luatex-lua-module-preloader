@@ -35,6 +35,10 @@
 #  Configuration - play with these variables
 ##############################################################################
 
+# Whether to strip in byte-compiling Lua chunks
+#  either 'y' or 'n'
+LUA_STRIP := y
+
 # Which engine to use
 #  examples: luatex, luajittex
 ENGINE := luatex
@@ -79,10 +83,18 @@ else ifeq ($(ENGINE),luajittex)
 endif
 
 %.texluabc : %.lua
+ifeq ($(LUA_STRIP),y)
 	texluac -s -o $@ -- $<
+else
+	texluac -o $@ -- $<
+endif
 
 %.texluajitbc : %.lua
-	texluajitc -bt raw $< $@
+ifeq ($(LUA_STRIP),y)
+	texluajitc -bst raw $< $@
+else
+	texluajitc -bgt raw $< $@
+endif
 
 tests/basic/normal.$(OUTPUT_FORMAT): tests/basic/preamble.tex tests/basic/body.tex
 	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
