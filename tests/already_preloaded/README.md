@@ -1,0 +1,1 @@
+Test the handling of already-preloaded modules.
