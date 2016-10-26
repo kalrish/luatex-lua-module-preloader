@@ -69,7 +69,7 @@ while argument do
 				error()
 			end
 		else
-			error("Lua module record specified multiple times")
+			error("--lua-module-record specified multiple times")
 		end
 	end
 	
