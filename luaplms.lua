@@ -9,6 +9,8 @@ local token_create
 local token_charzero_mode
 local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
 
+local errors = false
+
 local logging_prefix = "Lua module preloader: "
 
 local debug_logging_target = 'log'
@@ -25,6 +27,7 @@ end
 
 local error_logging_target = 'term and log'
 local log_error = function( ... )
+	errors = true
 	texio_write_nl(error_logging_target, logging_prefix)
 	texio_write(error_logging_target, "error: ", ...)
 end
@@ -48,13 +51,12 @@ end
 local i = 1
 local argument = arg[1]
 
-local lua_module_record_file_name_already_specified = false
+local times_that_the_module_record_file_was_already_tried_to_be_set = 0
 while argument do
 	local lua_module_record_file_name = string_match( argument , '^%-%-lua%-module%-record=(.+)$' )
 	if lua_module_record_file_name then
-		if not lua_module_record_file_name_already_specified then
-			lua_module_record_file_name_already_specified = true
-			
+		times_that_the_module_record_file_was_already_tried_to_be_set = times_that_the_module_record_file_was_already_tried_to_be_set + 1
+		if times_that_the_module_record_file_was_already_tried_to_be_set == 1 then
 			local fd, error_message, error_number_or_first_retval_of_write = io.open(lua_module_record_file_name, 'wb')
 			if fd then
 				log_debug( "used modules record file (" , lua_module_record_file_name , ") opened successfully" )
@@ -66,15 +68,25 @@ while argument do
 				end
 			else
 				log_error( "couldn't open the used modules record file (" , lua_module_record_file_name , "): " , error_message , " (error ", tostring(error_number_or_first_retval_of_write) , ")" )
-				error()
 			end
-		else
-			error("--lua-module-record specified multiple times")
+		elseif times_that_the_module_record_file_was_already_tried_to_be_set == 2 then
+			log_error( "--lua-module-record specified multiple times" )
+		end
+	elseif argument == '--lua-module-record' or argument == '--lua-module-record=' then
+		times_that_the_module_record_file_was_already_tried_to_be_set = times_that_the_module_record_file_was_already_tried_to_be_set + 1
+		if times_that_the_module_record_file_was_already_tried_to_be_set == 1 then
+			log_error( "missing argument for --lua-module-record" )
+		elseif times_that_the_module_record_file_was_already_tried_to_be_set == 2 then
+			log_error( "--lua-module-record specified multiple times" )
 		end
 	end
 	
 	i = i + 1
 	argument = arg[i]
+end
+
+if errors then
+	os.exit(false)
 end
 
 table.insert( package.searchers or package.loaders, 2,
