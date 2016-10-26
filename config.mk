@@ -1,5 +1,5 @@
 # Which engines to work with
-ENGINES := luatex
+ENGINES := luatex luajittex
 
 # Whether to strip in byte-compiling Lua chunks
 #  either 'y' or 'n'
