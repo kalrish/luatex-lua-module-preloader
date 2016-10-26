@@ -1,11 +1,10 @@
 # The name of this file is `GNUmakefile' and not e.g. `Makefile' because it follows GNU Make and is not intended for other Make versions.
 
-
-include config.mk
-
-
 # Tell Make to use Bash to execute recipes, as otherwise we would have very little guarantee on the syntax and features that are available and it's Bash I'm testing this against. Use another shell at your own.
 SHELL := bash
+
+
+include config.mk
 
 
 # Byte-compile the module and the initialization script for all engines and perform all tests
