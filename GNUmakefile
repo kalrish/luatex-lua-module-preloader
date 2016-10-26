@@ -9,17 +9,18 @@ include config.mk
 
 
 KNOWN_ENGINES := luatex luajittex
-TEXLUA_BYTECODE_EXTENSION_luatex := texluabc
-TEXLUA_BYTECODE_EXTENSION_luajittex := texluajitbc
+
+
+include $(foreach engine,$(KNOWN_ENGINES),engines.mk/$(engine).mk)
 
 
 # Byte-compile the module and the initialization script for all engines and perform all tests
 all: module initscript tests
 
-# Byte-compile the module for all engines
+# Byte-compile the module for all known engines
 module: $(foreach engine,$(KNOWN_ENGINES),luampl.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
-# Byte-compile the initialization script for all engines
+# Byte-compile the initialization script for all known engines
 initscript: $(foreach engine,$(KNOWN_ENGINES),luaplms.$(TEXLUA_BYTECODE_EXTENSION_$(engine)))
 
 # Perform all tests
@@ -38,20 +39,6 @@ clean:
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
 TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
-
-%.$(TEXLUA_BYTECODE_EXTENSION_luatex) : %.lua
-ifeq ($(LUA_STRIP),y)
-	texluac -s -o $@ -- $<
-else
-	texluac -o $@ -- $<
-endif
-
-%.$(TEXLUA_BYTECODE_EXTENSION_luajittex) : %.lua
-ifeq ($(LUA_STRIP),y)
-	texluajitc -bst raw $< $@
-else
-	texluajitc -bgt raw $< $@
-endif
 
 tests/basic/normal.$(OUTPUT_FORMAT): tests/basic/preamble.tex tests/basic/body.tex
 	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
