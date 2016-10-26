@@ -1,48 +1,22 @@
 # The name of this file is `GNUmakefile' and not e.g. `Makefile' because it follows GNU Make and is not intended for other Make versions.
 
 
-##############################################################################
-#  Targets
-##############################################################################
-#
-# all
-# 	Byte-compile the module and the initialization script and perform all
-# 	tests.
-# 
-# module
-# 	Byte-compile the module.
-# 
-# initscript
-# 	Byte-compile the initialization script.
-# 
-# tests
-# 	Perform all tests.
-# 
-# test-basic
-# 	Perform the basic test, which serves both as an usage and an automation
-# 	example.
-# 
-# test-already_preloaded
-# 	Perform the test about handling already preloaded modules.
-# 
-# clean
-# 	Remove generated files.
-# 
-##############################################################################
-
-
 include config.mk
 
 
 # Tell Make to use Bash to execute recipes, as otherwise we would have very little guarantee on the syntax and features that are available and it's Bash I'm testing this against. Use another shell at your own.
 SHELL := bash
 
+# Byte-compile the module and the initialization script for all engines and perform all tests
 all: module initscript tests
 
+# Byte-compile the module for all engines
 module: luampl.texluabc luampl.texluajitbc
 
+# Byte-compile the initialization script for all engines
 initscript: luaplms.texluabc luaplms.texluajitbc
 
+# Perform all tests
 tests: test-basic test-already_preloaded
 
 test-basic: tests/basic/normal.$(OUTPUT_FORMAT) tests/basic/mitfmt.$(OUTPUT_FORMAT) tests/basic/allprl.$(OUTPUT_FORMAT)
