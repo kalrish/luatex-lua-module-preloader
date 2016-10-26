@@ -55,4 +55,4 @@ The targets and configuration options are detailed in `GNUmakefile`.
 	The one provided by GNU coreutils 8.2.5 works.
 
 ###  Tup
-Tup version 0.7.5 works. No additional requirements with this setup. The configuration options are explained in `tup.config`.
+Tup version 0.7.5 works. No additional requirements with this build system. The configuration options are explained in `tup.config`.
