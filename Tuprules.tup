@@ -1,7 +1,12 @@
 .gitignore
 
-!texluac = |> texluac -s -o %o -- %f |> %B.texluabc
-!texluajitc = |> texluajitc -bt raw %f %o |> %B.texluajitbc
+ifeq (@(LUA_STRIP),y)
+	!texluac = |> texluac -s -o %o -- %f |> %B.texluabc
+	!texluajitc = |> texluajitc -bst raw %f %o |> %B.texluajitbc
+else
+	!texluac = |> texluac -o %o -- %f |> %B.texluabc
+	!texluajitc = |> texluajitc -bgt raw %f %o |> %B.texluajitbc
+endif
 
 ifeq (@(ENGINE),luatex)
 	TEXLUA_BYTECODE_EXTENSION=texluabc
