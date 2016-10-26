@@ -5,6 +5,7 @@ local tostring = tostring
 local type = type
 -- Up to Lua 5.1, it was `package.loaders`; from Lua 5.2 onwards, it's `package.searchers`. LuaTeX implements the latter, LuaJITTeX the former.
 local package_searchers = package.searchers or package.loaders
+local string_match = string.match
 local lua_setbytecode = lua.setbytecode
 local tex_sprint = tex.sprint
 local texio_write = texio.write
@@ -47,7 +48,6 @@ return function( list_of_modules_to_preload_file_path )
 		if not module_already_preloaded(module_name) then
 			local i = 1
 			local searcher = package_searchers[1]
-			local error_details = ""
 			
 			repeat
 				local loader_or_error, extra_value = searcher(module_name)
@@ -65,14 +65,16 @@ return function( list_of_modules_to_preload_file_path )
 						log_error( "along with a loader, searcher returned, for module '" , module_name , "', an extra value, which cannot be handled" )
 					end
 				elseif type(loader_or_error) == 'string' then
-					error_details = error_details .. loader_or_error
+					log_debug( "module '" , module_name , "' not found by searcher #" , tostring(i) , ": " , string_match(loader_or_error,'^\n?\t?(.+)$') )
+				else
+					log_debug( "module '" , module_name , "' not found by searcher #" , tostring(i) , " (no reason given)" )
 				end
 				
 				i = i + 1
 				searcher = package_searchers[i]
 			until searcher == nil
 			
-			log_error( "module '" , module_name , "' not found:" , error_details , "\n" )
+			log_error( "module '" , module_name , "' not found by any searcher" )
 		else
 			log_debug( "module '" , module_name , "' had already been preloaded" )
 			return true
