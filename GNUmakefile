@@ -4,6 +4,7 @@
 SHELL := bash
 
 
+# Include configuration variables, to be set by the user
 include config.mk
 
 
