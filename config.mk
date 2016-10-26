@@ -8,7 +8,7 @@ ENGINE := luatex
 
 # Base format to build upon in tests
 #  e.g.: lualatex, luajitlatex
-FORMAT := lualatex
+BASE_FORMAT := lualatex
 
 # Additional arguments to pass to the engine in tests, both in dumping formats and in producing documents
 #  e.g.: --jiton, --jithash=luajit20

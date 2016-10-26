@@ -41,10 +41,10 @@ TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
 ENGINE_ARGUMENTS := --interaction=nonstopmode --halt-on-error --recorder $(EXTRA_ENGINE_ARGUMENTS)
 
 tests/basic/normal.$(OUTPUT_FORMAT): tests/basic/preamble.tex tests/basic/body.tex
-	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
+	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(BASE_FORMAT) --output-format=$(OUTPUT_FORMAT) -- '\input{preamble.tex}\input{body.tex}'
 
 tests/basic/first.fmt: tests/basic/preamble.tex
-	cd tests/basic ; time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(FORMAT)' '\input{preamble.tex}\dump'
+	cd tests/basic ; time '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=first -- '&$(BASE_FORMAT)' '\input{preamble.tex}\dump'
 
 tests/basic/mitfmt.$(OUTPUT_FORMAT) tests/basic/mitfmt-lua_modules_to_preload.txt: luaplms.$(TEXLUA_BYTECODE_EXTENSION) tests/basic/first.fmt tests/basic/body.tex
 	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=$(OUTPUT_FORMAT) -- body.tex
@@ -56,7 +56,7 @@ tests/basic/allprl.$(OUTPUT_FORMAT): luaplms.$(TEXLUA_BYTECODE_EXTENSION) tests/
 	cd tests/basic ; time '$(ENGINE)' $(ENGINE_ARGUMENTS) --jobname=allprl --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=$(OUTPUT_FORMAT) -- body.tex
 
 tests/already_preloaded/fmt1.fmt: luampl.$(TEXLUA_BYTECODE_EXTENSION)
-	cd tests/already_preloaded ; '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=fmt1 -- '&$(FORMAT)' '\input{preamble.tex}\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("lua_modules_to_preload_in_format.txt")}\dump'
+	cd tests/already_preloaded ; '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=fmt1 -- '&$(BASE_FORMAT)' '\input{preamble.tex}\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("lua_modules_to_preload_in_format.txt")}\dump'
 
 tests/already_preloaded/fmt2.fmt: tests/already_preloaded/fmt1.fmt luampl.$(TEXLUA_BYTECODE_EXTENSION)
 	cd tests/already_preloaded ; '$(ENGINE)' --ini $(ENGINE_ARGUMENTS) --jobname=fmt2 -- '&fmt1' '\directlua{dofile("../../luampl.$(TEXLUA_BYTECODE_EXTENSION)")("lua_modules_to_preload_in_format.txt")}\dump'
