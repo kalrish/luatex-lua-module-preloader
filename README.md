@@ -34,25 +34,10 @@ Then, in the document generation run, the Lua initialization script adds a custo
 
  -  the Lua module `ltluatex`, part of the LaTeX kernel
 
-##  Example
-An example LaTeX document along with a couple automation setups are included as examples and test systems. The same document is generated in three ways:
+##  Building
+A couple build systems are supported to handle byte-compiling the module and the initialization script and automating the tests.
 
- -  without a custom format, as is usually done;
- -  with a custom format but no Lua modules preloaded; and
- -  with a custom format and all required modules preloaded.
-
-###  Required LaTeX packages
-
- -  [`lipsum`](http://www.ctan.org/pkg/lipsum)
- -  [`xparse`](http://www.ctan.org/pkg/xparse)
- -  [`etoolbox`](http://www.ctan.org/pkg/etoolbox)
- -  [`multicol`](http://www.ctan.org/pkg/multicol)
- -  [`changepage`](http://www.ctan.org/pkg/changepage)
- -  [`enumitem`](http://www.ctan.org/pkg/enumitem)
- -  [`fontspec`](http://www.ctan.org/pkg/fontspec)
- -  [`microtype`](http://www.ctan.org/pkg/microtype)
-
-###  With Make
+###  Make
 The targets and configuration options are detailed in `GNUmakefile`.
 
 ####  Requirements
@@ -69,5 +54,5 @@ The targets and configuration options are detailed in `GNUmakefile`.
 
 	The one provided by GNU coreutils 8.2.5 works.
 
-###  With Tup
+###  Tup
 Tup version 0.7.5 works. No additional requirements with this setup. The configuration options are explained in `tup.config`.
