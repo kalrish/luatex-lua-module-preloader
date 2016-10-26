@@ -11,6 +11,7 @@ include config.mk
 KNOWN_ENGINES := luatex luajittex
 
 
+# Include rules and variables specific to each engine
 include $(foreach engine,$(KNOWN_ENGINES),engines.mk/$(engine).mk)
 
 
