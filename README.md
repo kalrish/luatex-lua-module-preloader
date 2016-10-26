@@ -18,53 +18,6 @@ TeX engines have traditionally allowed to dump their state in a format and resto
 	
 	Lua module sources, either in source or bytecode form, are not required when generating the document, as the loaders are already available in the format. This might be useful if you are deploying a custom TeX installation and would like to avoid shipping dozens of Lua source files, although most Lua modules this system is able to catch come with LaTeX packages you would have to distribute anyway.
 
-##  How to use it
-Let's start with a simple LaTeX document:
-
-```TeX
-\documentclass{article}
-
-\usepackage{lipsum}
-
-\begin{document}
-	\lipsum
-\end{document}
-```
-
-Generating the document is straightforward:
-
-    $  lualatex main.tex
-
-… but there's no need to load the class and the package every time, so you decide to take out the static part:
-
-```TeX
-\documentclass{article}
-
-\usepackage{lipsum}
-```
-
-… and put it in a separate file `preamble.tex` to dump a format:
-
-    $  luatex --ini --jobname=myfmt -- &lualatex \input{preamble.tex}\dump
-
-Instead of adding the `\dump` to the file itself, I have decided to put it on the LuaTeX invocation so that, if you ever felt unsure and wanted to see if using a format makes a difference in the output, you could just run:
-
-    $  luatex --jobname=main -- \input{preamble.tex}\input{main.tex}
-
-To generate the document using the format:
-
-    $  luatex --fmt=myfmt main.tex
-
-Now that you're using a format, it's time to preload the Lua modules required to generate the document. However, first you need to know which modules to preload. To get the list of modules used in generating your document, use the initialization script:
-
-    $  luatex --lua=luaplms.lua --lua-module-record=lua_modules_to_preload.txt --fmt=myfmt main.tex
-
-A file named `lua_modules_to_preload.txt` will be created. This file contains the list of modules you could preload in the format. To do that:
-
-    $  luatex --ini --jobname=myfmt -- &myfmt \directlua{require('luampl')("lua_modules_to_preload.txt")}\dump
-
-That's it. Generate the document yet again and in the log you'll find records that modules have been preloaded.
-
 ##  How it works
 For each module requested to be preloaded, a loader is searched for following the same logic as [`require`](http://www.lua.org/manual/5.3/manual.html#pdf-require). When a loader is found, it is stored in a bytecode register and the register number is `\chardef`ed to a control sequence name derived from the module name.
 
