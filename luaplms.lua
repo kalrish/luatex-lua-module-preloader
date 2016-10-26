@@ -45,9 +45,10 @@ end
 local record_used_module = function()
 end
 
-local lua_module_record_file_name_already_specified = false
 local i = 1
 local argument = arg[1]
+
+local lua_module_record_file_name_already_specified = false
 while argument do
 	local lua_module_record_file_name = string_match( argument , '^%-%-lua%-module%-record=(.+)$' )
 	if lua_module_record_file_name then
