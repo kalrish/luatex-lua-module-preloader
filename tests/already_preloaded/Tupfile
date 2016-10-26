@@ -2,5 +2,5 @@ include_rules
 
 ENGINE_ARGUMENTS=--interaction=nonstopmode --halt-on-error --recorder @(EXTRA_ENGINE_ARGUMENTS)
 
-: ../../luampl.$(TEXLUA_BYTECODE_EXTENSION) |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=fmt1 -- "&@(FORMAT)" "\input{preamble.tex}\directlua{dofile('../../luampl.$(TEXLUA_BYTECODE_EXTENSION)')('lua_modules_to_preload_in_format.txt')}\dump" |> fmt1.log fmt1.fls fmt1.fmt
+: ../../luampl.$(TEXLUA_BYTECODE_EXTENSION) |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=fmt1 -- "&@(BASE_FORMAT)" "\input{preamble.tex}\directlua{dofile('../../luampl.$(TEXLUA_BYTECODE_EXTENSION)')('lua_modules_to_preload_in_format.txt')}\dump" |> fmt1.log fmt1.fls fmt1.fmt
 : fmt1.fmt ../../luampl.$(TEXLUA_BYTECODE_EXTENSION) |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=fmt2 -- "&fmt1" "\directlua{dofile('../../luampl.$(TEXLUA_BYTECODE_EXTENSION)')('lua_modules_to_preload_in_format.txt')}\dump" |> fmt2.log fmt2.fls fmt2.fmt
