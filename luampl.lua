@@ -52,7 +52,7 @@ return function( list_of_modules_to_preload_file_path )
 			repeat
 				local loader_or_error, extra_value = searcher(module_name)
 				if type(loader_or_error) == 'function' then
-					log_debug( "loader for module '" , module_name , "' found by searcher #" , tostring(i) )
+					log_debug( "module '" , module_name , "' found by searcher #" , tostring(i) )
 					
 					if not extra_value then
 						local bytecode_register = luatexbase_new_bytecode( "loader for Lua module '" .. module_name .. "'" )
