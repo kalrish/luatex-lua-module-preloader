@@ -56,14 +56,14 @@ TEXLUA_BYTECODE_EXTENSION_luajittex := texluajitbc
 
 TEXLUA_BYTECODE_EXTENSION := $(TEXLUA_BYTECODE_EXTENSION_$(ENGINE))
 
-%.texluabc : %.lua
+%.$(TEXLUA_BYTECODE_EXTENSION_luatex) : %.lua
 ifeq ($(LUA_STRIP),y)
 	texluac -s -o $@ -- $<
 else
 	texluac -o $@ -- $<
 endif
 
-%.texluajitbc : %.lua
+%.$(TEXLUA_BYTECODE_EXTENSION_luajittex) : %.lua
 ifeq ($(LUA_STRIP),y)
 	texluajitc -bst raw $< $@
 else
