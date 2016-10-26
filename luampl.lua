@@ -24,18 +24,18 @@ luatexbase.provides_module{
 }
 
 
-local logging_prefix = "Lua module preloader: "
+local logging_identifier = "Lua module preloader"
 
 local debug_logging_target = 'log'
 local log_debug = function( ... )
-	texio_write_nl(debug_logging_target, logging_prefix)
-	texio_write(debug_logging_target, "debug: ", ...)
+	texio_write_nl(debug_logging_target, logging_identifier)
+	texio_write(debug_logging_target, ": debug: ", ...)
 end
 
 local error_logging_target = 'term and log'
 local log_error = function( ... )
-	texio_write_nl(error_logging_target, logging_prefix)
-	texio_write(error_logging_target, "error: ", ...)
+	texio_write_nl(error_logging_target, logging_identifier)
+	texio_write(error_logging_target, ": error: ", ...)
 end
 
 return function( list_of_modules_to_preload_file_path )

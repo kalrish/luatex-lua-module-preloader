@@ -11,25 +11,25 @@ local lua_bytecode_register_name_prefix = 'luamoduleloaderbytecode@'
 
 local errors = false
 
-local logging_prefix = "Lua module preloader: "
+local logging_identifier = "Lua module preloader"
 
 local debug_logging_target = 'log'
 local log_debug = function( ... )
-	texio_write_nl(debug_logging_target, logging_prefix)
-	texio_write(debug_logging_target, "debug: ", ...)
+	texio_write_nl(debug_logging_target, logging_identifier)
+	texio_write(debug_logging_target, ": debug: ", ...)
 end
 
 local warning_logging_target = 'term and log'
 local log_warning = function( ... )
-	texio_write_nl(warning_logging_target, logging_prefix)
-	texio_write(warning_logging_target, "warning: ", ...)
+	texio_write_nl(warning_logging_target, logging_identifier)
+	texio_write(warning_logging_target, ": warning: ", ...)
 end
 
 local error_logging_target = 'term and log'
 local log_error = function( ... )
 	errors = true
-	texio_write_nl(error_logging_target, logging_prefix)
-	texio_write(error_logging_target, "error: ", ...)
+	texio_write_nl(error_logging_target, logging_identifier)
+	texio_write(error_logging_target, ": error: ", ...)
 end
 
 -- Taken from ltluatex
