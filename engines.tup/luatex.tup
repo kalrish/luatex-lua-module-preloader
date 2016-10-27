@@ -2,6 +2,7 @@ ENGINE_COMMAND = @(LUATEX)
 
 TEXLUA_BYTECODE_EXTENSION=texluabc
 
+# See [the LUAC man page](https://www.lua.org/manual/5.2/luac.html) for a description of the options
 ifeq (@(LUATEX_LUA_STRIP),y)
 	!luatexluabytecompile = |> @(LUATEX) --luaconly -s -o %o -- %f |> %B.$(TEXLUA_BYTECODE_EXTENSION)
 else
