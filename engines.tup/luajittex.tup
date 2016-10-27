@@ -2,6 +2,7 @@ ENGINE_COMMAND = @(LUAJITTEX)
 
 TEXLUA_BYTECODE_EXTENSION=texluajitbc
 
+# See [Running LuaJIT](http://luajit.org/running.html) for a description of the options
 ifeq (@(LUAJITTEX_LUA_STRIP),y)
 	!luatexluabytecompile = |> @(LUAJITTEX) --luaconly -bst raw %f %o |> %B.$(TEXLUA_BYTECODE_EXTENSION)
 else
