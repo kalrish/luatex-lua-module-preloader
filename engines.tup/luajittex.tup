@@ -1,0 +1,21 @@
+ENGINE_COMMAND = @(LUAJITTEX)
+
+TEXLUA_BYTECODE_EXTENSION=texluajitbc
+
+ifeq (@(LUAJITTEX_LUA_STRIP),y)
+	!luatexluabytecompile = |> @(LUAJITTEX) --luaconly -bst raw %f %o |> %B.$(TEXLUA_BYTECODE_EXTENSION)
+else
+	!luatexluabytecompile = |> @(LUAJITTEX) --luaconly -bgt raw %f %o |> %B.$(TEXLUA_BYTECODE_EXTENSION)
+endif
+
+ifeq (@(LUAJITTEX_LUA_JIT),y)
+ENGINE_OWN_ARGUMENTS += --jiton
+endif
+
+ifdef LUAJITTEX_LUA_JITHASH
+ENGINE_OWN_ARGUMENTS += --jithash=@(LUAJITTEX_LUA_JITHASH)
+endif
+
+ENGINE_OWN_ARGUMENTS += @(LUAJITTEX_EXTRA_ARGUMENTS)
+
+LATEX_FORMAT = @(LUAJITTEX_LATEX_FORMAT)

@@ -1,9 +1,7 @@
 include_rules
 
-ENGINE_ARGUMENTS=--interaction=nonstopmode --halt-on-error --recorder @(EXTRA_ENGINE_ARGUMENTS)
-
-: |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=normal --fmt=@(BASE_FORMAT) --output-format=@(OUTPUT_FORMAT) -- "\input{preamble.tex}\input{body.tex}" |> normal.log normal.fls normal.aux normal.@(OUTPUT_FORMAT)
-: |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=first -- "&@(BASE_FORMAT)" "\input{preamble.tex}\dump" |> first.log first.fls first.fmt
-: ../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) first.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=@(OUTPUT_FORMAT) -- body.tex |> mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.@(OUTPUT_FORMAT)
-: first.fmt ../../luampl.$(TEXLUA_BYTECODE_EXTENSION) mitfmt-lua_modules_to_preload.txt |> @(ENGINE) --ini $(ENGINE_ARGUMENTS) --jobname=second -- "&first" "\directlua{dofile('../../luampl.$(TEXLUA_BYTECODE_EXTENSION)')('mitfmt-lua_modules_to_preload.txt')}\dump" |> second.log second.fls second.fmt
-: ../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) second.fmt |> @(ENGINE) $(ENGINE_ARGUMENTS) --jobname=allprl --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=@(OUTPUT_FORMAT) -- body.tex |> allprl.log allprl.fls allprl.aux allprl.@(OUTPUT_FORMAT)
+: |> $(ENGINE_COMMAND) $(ENGINE_ARGUMENTS) --jobname=normal --fmt=$(LATEX_FORMAT) --output-format=@(OUTPUT_FORMAT) -- "\input{preamble.tex}\input{body.tex}" |> normal.log normal.fls normal.aux normal.@(OUTPUT_FORMAT)
+: |> $(ENGINE_COMMAND) --ini $(ENGINE_ARGUMENTS) --jobname=first -- "&$(LATEX_FORMAT)" "\input{preamble.tex}\dump" |> first.log first.fls first.fmt
+: ../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) first.fmt |> $(ENGINE_COMMAND) $(ENGINE_ARGUMENTS) --jobname=mitfmt --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --lua-module-record=mitfmt-lua_modules_to_preload.txt --fmt=first --output-format=@(OUTPUT_FORMAT) -- body.tex |> mitfmt.log mitfmt.fls mitfmt-lua_modules_to_preload.txt mitfmt.aux mitfmt.@(OUTPUT_FORMAT)
+: first.fmt ../../luampl.$(TEXLUA_BYTECODE_EXTENSION) mitfmt-lua_modules_to_preload.txt |> $(ENGINE_COMMAND) --ini $(ENGINE_ARGUMENTS) --jobname=second -- "&first" "\directlua{dofile('../../luampl.$(TEXLUA_BYTECODE_EXTENSION)')('mitfmt-lua_modules_to_preload.txt')}\dump" |> second.log second.fls second.fmt
+: ../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) second.fmt |> $(ENGINE_COMMAND) $(ENGINE_ARGUMENTS) --jobname=allprl --lua=../../luaplms.$(TEXLUA_BYTECODE_EXTENSION) --fmt=second --output-format=@(OUTPUT_FORMAT) -- body.tex |> allprl.log allprl.fls allprl.aux allprl.@(OUTPUT_FORMAT)

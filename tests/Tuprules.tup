@@ -1,0 +1,1 @@
+ENGINE_ARGUMENTS = --interaction=nonstopmode --halt-on-error --recorder $(ENGINE_OWN_ARGUMENTS)
